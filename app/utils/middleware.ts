@@ -11,11 +11,13 @@ export async function getAuthUser(req: Request): Promise<AuthUser | null> {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Auth: No bearer token found in header:", authHeader);
       return null;
     }
 
     const token = authHeader.slice(7);
     if (!token) {
+      console.error("Auth: Token is empty");
       return null;
     }
 
@@ -25,6 +27,7 @@ export async function getAuthUser(req: Request): Promise<AuthUser | null> {
     } = await supabase.auth.getUser(token);
 
     if (error || !supabaseUser?.email) {
+      console.error("Auth: Supabase getUser failed:", error);
       return null;
     }
 
@@ -34,6 +37,7 @@ export async function getAuthUser(req: Request): Promise<AuthUser | null> {
     });
 
     if (!dbUser) {
+      console.error("Auth: User not found in Prisma DB for email:", supabaseUser.email);
       return null;
     }
 
@@ -42,7 +46,8 @@ export async function getAuthUser(req: Request): Promise<AuthUser | null> {
       email: dbUser.email,
       role: dbUser.role,
     };
-  } catch {
+  } catch (error) {
+    console.error("Auth middleware error:", error);
     return null;
   }
 }
