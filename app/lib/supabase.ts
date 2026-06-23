@@ -1,20 +1,18 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 let supabaseInstance: SupabaseClient | null = null;
 
 export const getSupabase = async (): Promise<SupabaseClient> => {
   if (supabaseInstance) return supabaseInstance;
 
-  const res = await fetch('/api/config');
-  if (!res.ok) {
-    throw new Error('Failed to fetch config');
-  }
-  const config = await res.json();
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-  if (!config.supabaseUrl || !config.supabaseAnonKey) {
-    throw new Error('Supabase URL or Anon Key is missing from the server.');
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Supabase URL or Anon Key is missing from Vite environment variables.');
   }
 
-  supabaseInstance = createClient(config.supabaseUrl, config.supabaseAnonKey);
+  supabaseInstance = createBrowserClient(supabaseUrl, supabaseAnonKey);
   return supabaseInstance;
 };

@@ -3,11 +3,8 @@ import { type RouteConfig, route, layout, index, prefix } from "@react-router/de
 export default [
   // API Routes (Resource Routes)
   ...prefix("api", [
-    route("config", "routes/api.config.ts"),
     route("auth/register", "routes/api.auth.register.ts"),
-    route("auth/login", "routes/api.auth.login.ts"),
     route("auth/me", "routes/api.auth.me.ts"),
-    route("auth/logout", "routes/api.auth.logout.ts"),
     
     route("items", "routes/api.items.ts"),
     route("items/:id", "routes/api.items.id.ts"),

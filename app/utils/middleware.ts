@@ -1,5 +1,5 @@
-import { supabase } from "./supabase";
 import { prisma } from "./db.server";
+import { createSSRClient } from "./supabase.server";
 
 export interface AuthUser {
   id: string;
@@ -9,22 +9,12 @@ export interface AuthUser {
 
 export async function getAuthUser(req: Request): Promise<AuthUser | null> {
   try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      console.error("Auth: No bearer token found in header:", authHeader);
-      return null;
-    }
-
-    const token = authHeader.slice(7);
-    if (!token) {
-      console.error("Auth: Token is empty");
-      return null;
-    }
+    const { supabase } = createSSRClient(req);
 
     const {
       data: { user: supabaseUser },
       error,
-    } = await supabase.auth.getUser(token);
+    } = await supabase.auth.getUser();
 
     if (error || !supabaseUser?.email) {
       console.error("Auth: Supabase getUser failed:", error);
