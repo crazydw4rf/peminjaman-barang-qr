@@ -33,6 +33,7 @@ export default [
     route("history", "routes/history.tsx"),
     route("admin/items", "routes/admin-items.tsx"),
     route("admin/categories", "routes/admin-categories.tsx"),
+    route("admin/reports", "routes/admin-reports.tsx"),
   ]),
   
   index("routes/index.tsx")

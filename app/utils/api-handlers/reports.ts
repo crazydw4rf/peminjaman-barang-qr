@@ -59,6 +59,11 @@ export async function handleGetHistory(req: Request): Promise<Response> {
       }
     }
 
+    const status = url.searchParams.get("status");
+    if (status) {
+      where.status = status;
+    }
+
     const [borrowings, total] = await Promise.all([
       prisma.borrowing.findMany({
         where,

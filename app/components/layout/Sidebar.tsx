@@ -7,6 +7,7 @@ import {
   History,
   Settings,
   Tags,
+  BarChart3,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -28,6 +29,7 @@ const navItems: NavItem[] = [
 const adminItems: NavItem[] = [
   { label: 'Kelola Barang', href: '/admin/items', icon: Settings, adminOnly: true },
   { label: 'Kelola Kategori', href: '/admin/categories', icon: Tags, adminOnly: true },
+  { label: 'Statistik & Laporan', href: '/admin/reports', icon: BarChart3, adminOnly: true },
 ];
 
 interface SidebarProps {
