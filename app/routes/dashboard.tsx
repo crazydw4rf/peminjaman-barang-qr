@@ -47,8 +47,14 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         if (user?.role === 'ADMIN') {
-          const summary = await apiFetch<SummaryStats>('/api/reports/summary');
-          setStats(summary);
+          const res = await apiFetch<{ summary: { totalItems: number; availableItems: number; borrowedItems: number; damagedItems: number } }>('/api/reports/summary');
+          const s = res?.summary;
+          setStats({
+            total: s?.totalItems ?? 0,
+            tersedia: s?.availableItems ?? 0,
+            dipinjam: s?.borrowedItems ?? 0,
+            rusak: s?.damagedItems ?? 0,
+          });
         } else {
           // For regular users, compute from items
           const data = await apiFetch<{ items: { id: string; status: string }[] }>('/api/items');
