@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ItemStatus {
+  TERSEDIA
+  DIPINJAM
+  RUSAK
+}
+
+enum BorrowingStatus {
+  DIPINJAM
+  DIKEMBALIKAN
+  TERLAMBAT
+}
+
+enum ItemCondition {
+  BAIK
+  RUSAK
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  name      String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  borrowings Borrowing[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  items Item[]
+
+  @@map("categories")
+}
+
+model Item {
+  id          String     @id @default(uuid()) @db.Uuid
+  name        String
+  code        String     @unique
+  description String?
+  photoUrl    String?    @map("photo_url")
+  categoryId  String     @map("category_id") @db.Uuid
+  status      ItemStatus @default(TERSEDIA)
+  qrCodeData  String?    @map("qr_code_data")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  category   Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  borrowings Borrowing[]
+
+  @@index([categoryId])
+  @@index([status])
+  @@index([code])
+  @@map("items")
+}
+
+model Borrowing {
+  id              String          @id @default(uuid()) @db.Uuid
+  itemId          String          @map("item_id") @db.Uuid
+  userId          String          @map("user_id") @db.Uuid
+  borrowedAt      DateTime        @default(now()) @map("borrowed_at")
+  dueDate         DateTime?       @map("due_date")
+  returnedAt      DateTime?       @map("returned_at")
+  status          BorrowingStatus @default(DIPINJAM)
+  conditionBefore ItemCondition   @default(BAIK) @map("condition_before")
+  conditionAfter  ItemCondition?  @map("condition_after")
+  notes           String?
+  createdAt       DateTime        @default(now()) @map("created_at")
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([itemId])
+  @@index([userId])
+  @@index([status])
+  @@index([borrowedAt])
+  @@map("borrowings")
+}
